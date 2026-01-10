@@ -8,7 +8,7 @@ All Components are stored in a pool called Container.
 When wiring (injecting) a dependency of type T, Foxhound will simply check its Container to try and pull a Component of kind T.  
 Multiple Components of the same type can exist in the same Container. To select a specific Component, we use qualifiers.  
 So, each Component has a _kind_ and an optional _qualifier_.  
-Different Components of the same kind can't share a qualifier.  
+Each qualifier must be unique.  
 
 ## Usage
 To define a Component we can use the `component` decorator on both classes and functions:
@@ -48,7 +48,7 @@ if __name__ == '__main__':
 Snake, do you copy?
 ```
 
-Qualifiers are used to distinguish between Components of the same type.  
+Qualifiers are used to distinguish between multiple Components of the same type.  
 Use `component`'s `qualifier` parameter to define the Component's qualifier.  
 Use the `param_qualifier` parameter (of both `component` and `wire`) to select Components by a qualifier: pass a dictionary containing the name of the parameter as a key to the desired qualifier.
 
