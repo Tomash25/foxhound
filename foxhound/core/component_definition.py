@@ -1,4 +1,5 @@
-from typing import Callable, Generic, TypeVar
+from collections.abc import Callable
+from typing import Generic, TypeVar
 
 from foxhound.core.base_model import BaseModel
 from foxhound.core.component_metadata import ComponentMetadata

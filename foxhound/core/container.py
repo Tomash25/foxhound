@@ -1,4 +1,4 @@
-from typing import Any, Optional, TypeVar
+from typing import Any, TypeVar
 
 from foxhound.core.component import Component
 
@@ -11,7 +11,7 @@ class Container:
         self._components: list[Component[Any]] = []
 
     def register_component(self, component: Component[Any]) -> None:
-        qualifier: Optional[str] = component.metadata.qualifier
+        qualifier: str | None = component.metadata.qualifier
 
         if qualifier is not None and self._already_exists(qualifier):
             raise ValueError(

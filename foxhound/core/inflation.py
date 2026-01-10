@@ -1,4 +1,5 @@
-from typing import Any, Callable, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from foxhound.core.component import Component
 from foxhound.core.component_definition import ComponentDefinition

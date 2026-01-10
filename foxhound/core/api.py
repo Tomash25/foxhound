@@ -1,6 +1,7 @@
 import inspect
 import logging
-from typing import Any, Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from foxhound.core.component_definition import ComponentDefinition
 from foxhound.core.component_metadata import ComponentMetadata
@@ -20,8 +21,8 @@ T = TypeVar('T')
 
 
 def component(
-        qualifier: Optional[str] = None,
-        param_qualifiers: Optional[dict[str, str]] = None
+        qualifier: str | None = None,
+        param_qualifiers: dict[str, str] | None = None
 ) -> type[T] | Callable[..., T]:
     def decorator(target: type[T] | Callable[..., T]) -> type[T] | Callable[..., T]:
         component_definition: ComponentDefinition[T] = define_component(target, qualifier, param_qualifiers)
@@ -33,8 +34,8 @@ def component(
 
 def define_component(
         target: type[T] | Callable[..., T],
-        qualifier: Optional[str] = None,
-        param_qualifiers: Optional[dict[str, str]] = None
+        qualifier: str | None = None,
+        param_qualifiers: dict[str, str] | None = None
 ) -> ComponentDefinition[T]:
     signature: inspect.Signature = inspect.signature(target)
 
@@ -56,7 +57,7 @@ def define_component(
 
 
 def wire(
-        param_qualifiers: Optional[dict[str, str]] = None
+        param_qualifiers: dict[str, str] | None = None
 ) -> Callable[[], T]:
     def decorator(func: Callable[..., T]) -> Callable[[], Callable[[], T]]:
         signature: inspect.Signature = inspect.signature(func)

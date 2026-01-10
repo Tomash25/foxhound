@@ -1,4 +1,4 @@
-from typing import Generic, Optional, TypeVar
+from typing import Generic, TypeVar
 
 from pydantic import model_validator
 
@@ -9,8 +9,8 @@ T = TypeVar('T')
 
 class Result(BaseModel, Generic[T]):
     successful: bool
-    value: Optional[T] = None
-    exception: Optional[Exception] = None
+    value: T | None = None
+    exception: Exception | None = None
 
     @classmethod
     def ok(cls, value: T) -> 'Result[T]':

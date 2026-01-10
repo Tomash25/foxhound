@@ -1,5 +1,6 @@
 import inspect
-from typing import Any, Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from foxhound.core.component import Component
 from foxhound.core.container import Container
@@ -18,7 +19,7 @@ def try_wire_dependencies(
     implementations: list[Any] = []
 
     for name, kind in dependencies.items():
-        qualifier: Optional[str] = param_qualifiers.get(name)
+        qualifier: str | None = param_qualifiers.get(name)
         component_lookup: Result[Any] = _find_component(container, kind, qualifier)
 
         if not component_lookup.successful:
@@ -29,7 +30,7 @@ def try_wire_dependencies(
     return Result.ok(lambda: func(*implementations))
 
 
-def _find_component(container: Container, kind: type[T], qualifier: Optional[str]) -> Result[Component[T]]:
+def _find_component(container: Container, kind: type[T], qualifier: str | None) -> Result[Component[T]]:
     if qualifier is None:
         return _find_unqualified_component(container, kind)
 
