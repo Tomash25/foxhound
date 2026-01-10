@@ -20,8 +20,10 @@ To use Components as dependencies without defining a new one we can use the `wir
 Initialize the DI process via the `start` function.
 
 **Simple example:**
+
 ```python
-from foxhound import component, start, wire
+from foxhound import start, wire
+from foxhound.core import component
 
 
 @component()
@@ -53,8 +55,10 @@ Use `component`'s `qualifier` parameter to define the Component's qualifier.
 Use the `param_qualifier` parameter (of both `component` and `wire`) to select Components by a qualifier: pass a dictionary containing the name of the parameter as a key to the desired qualifier.
 
 **Qualifier example:**
+
 ```python
-from foxhound import component, start, wire
+from foxhound import start, wire
+from foxhound.core import component
 
 
 @component(qualifier='major_zero')
