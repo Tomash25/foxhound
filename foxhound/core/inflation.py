@@ -1,4 +1,4 @@
-from typing import List, Any, TypeVar, Callable
+from typing import Any, Callable, TypeVar
 
 from foxhound.core.component import Component
 from foxhound.core.component_definition import ComponentDefinition
@@ -9,8 +9,8 @@ from foxhound.core.wiring import try_wire_dependencies
 T = TypeVar('T')
 
 
-def inflate(container: Container, component_definitions: List[ComponentDefinition[Any]]) -> None:
-    inflation_tasks: List[ComponentDefinition] = component_definitions.copy()
+def inflate(container: Container, component_definitions: list[ComponentDefinition[Any]]) -> None:
+    inflation_tasks: list[ComponentDefinition] = component_definitions.copy()
 
     while len(inflation_tasks) > 0:
         progressed: bool = False
@@ -40,7 +40,7 @@ def inflate(container: Container, component_definitions: List[ComponentDefinitio
 
 
 def _analyze_wiring_issue(
-        component_definitions: List[ComponentDefinition[Any]],
+        component_definitions: list[ComponentDefinition[Any]],
         container: Container
 ) -> Exception:
     for definition in component_definitions:

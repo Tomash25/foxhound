@@ -1,5 +1,5 @@
 import inspect
-from typing import TypeVar, Callable, Any, Dict, Type, List, Optional
+from typing import Any, Callable, Optional, TypeVar
 
 from foxhound.core.component import Component
 from foxhound.core.container import Container
@@ -11,11 +11,11 @@ T = TypeVar('T')
 
 def try_wire_dependencies(
         func: Callable[..., T],
-        param_qualifiers: Dict[str, str],
+        param_qualifiers: dict[str, str],
         container: Container
 ) -> Result[Callable[[], T]]:
-    dependencies: Dict[str, Type[Any]] = _infer_dependencies(func)
-    implementations: List[Any] = []
+    dependencies: dict[str, type[Any]] = _infer_dependencies(func)
+    implementations: list[Any] = []
 
     for name, kind in dependencies.items():
         qualifier: Optional[str] = param_qualifiers.get(name)
@@ -29,15 +29,15 @@ def try_wire_dependencies(
     return Result.ok(lambda: func(*implementations))
 
 
-def _find_component(container: Container, kind: Type[T], qualifier: Optional[str]) -> Result[Component[T]]:
+def _find_component(container: Container, kind: type[T], qualifier: Optional[str]) -> Result[Component[T]]:
     if qualifier is None:
         return _find_unqualified_component(container, kind)
 
     return _find_qualified_component(container, kind, qualifier)
 
 
-def _find_qualified_component(container: Container, kind: Type[T], qualifier: str) -> Result[Component[T]]:
-    potential_matches: List[Component[T]] = container.get_components(kind)
+def _find_qualified_component(container: Container, kind: type[T], qualifier: str) -> Result[Component[T]]:
+    potential_matches: list[Component[T]] = container.get_components(kind)
 
     for component in potential_matches:
         if component.metadata.qualifier == qualifier:
@@ -59,8 +59,8 @@ def _find_qualified_component(container: Container, kind: Type[T], qualifier: st
     )
 
 
-def _find_unqualified_component(container: Container, kind: Type[T]) -> Result[Component[T]]:
-    matching_components: List[Component[T]] = container.get_components(kind)
+def _find_unqualified_component(container: Container, kind: type[T]) -> Result[Component[T]]:
+    matching_components: list[Component[T]] = container.get_components(kind)
 
     if len(matching_components) < 1:
         return Result.fail(ValueError(f'No registered component of {kind}'))
@@ -75,5 +75,5 @@ def _find_unqualified_component(container: Container, kind: Type[T]) -> Result[C
     )
 
 
-def _infer_dependencies(func: Callable[..., Any]) -> Dict[str, Type[Any]]:
+def _infer_dependencies(func: Callable[..., Any]) -> dict[str, type[Any]]:
     return simplify_parameters(inspect.signature(func))

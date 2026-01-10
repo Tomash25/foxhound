@@ -1,6 +1,6 @@
 import inspect
 import logging
-from typing import TypeVar, Type, List, Callable, Any, Optional, Dict
+from typing import Any, Callable, Optional, TypeVar
 
 from foxhound.core.component_definition import ComponentDefinition
 from foxhound.core.component_metadata import ComponentMetadata
@@ -13,17 +13,17 @@ from foxhound.core.wiring_task import WiringTask
 
 _CONTAINER = Container()
 _INFLATED = False
-_COMPONENT_DEFINITIONS: List[ComponentDefinition[Any]] = []
-_WIRING_TASKS: List[WiringTask] = []
+_COMPONENT_DEFINITIONS: list[ComponentDefinition[Any]] = []
+_WIRING_TASKS: list[WiringTask] = []
 
 T = TypeVar('T')
 
 
 def component(
         qualifier: Optional[str] = None,
-        param_qualifiers: Optional[Dict[str, str]] = None
-) -> Type[T] | Callable[..., T]:
-    def decorator(target: Type[T] | Callable[..., T]) -> Type[T] | Callable[..., T]:
+        param_qualifiers: Optional[dict[str, str]] = None
+) -> type[T] | Callable[..., T]:
+    def decorator(target: type[T] | Callable[..., T]) -> type[T] | Callable[..., T]:
         component_definition: ComponentDefinition[T] = define_component(target, qualifier, param_qualifiers)
         _COMPONENT_DEFINITIONS.append(component_definition)
         return target
@@ -32,9 +32,9 @@ def component(
 
 
 def define_component(
-        target: Type[T] | Callable[..., T],
+        target: type[T] | Callable[..., T],
         qualifier: Optional[str] = None,
-        param_qualifiers: Optional[Dict[str, str]] = None
+        param_qualifiers: Optional[dict[str, str]] = None
 ) -> ComponentDefinition[T]:
     signature: inspect.Signature = inspect.signature(target)
 
@@ -43,7 +43,7 @@ def define_component(
         return_type = target
     else:
         assert fully_hinted(signature), 'Component function must be fully annotated with type hinting'
-        return_type: Type[T] = signature.return_annotation
+        return_type: type[T] = signature.return_annotation
 
     return ComponentDefinition[return_type](
         component_metadata=ComponentMetadata[return_type](
@@ -56,7 +56,7 @@ def define_component(
 
 
 def wire(
-        param_qualifiers: Optional[Dict[str, str]] = None
+        param_qualifiers: Optional[dict[str, str]] = None
 ) -> Callable[[], T]:
     def decorator(func: Callable[..., T]) -> Callable[[], Callable[[], T]]:
         signature: inspect.Signature = inspect.signature(func)

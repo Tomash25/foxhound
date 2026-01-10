@@ -1,4 +1,4 @@
-from typing import List, TypeVar, Any, Type, Optional
+from typing import Any, Optional, TypeVar
 
 from foxhound.core.component import Component
 
@@ -8,7 +8,7 @@ T = TypeVar('T')
 class Container:
     def __init__(self):
         self.inflated: bool = False
-        self._components: List[Component[Any]] = []
+        self._components: list[Component[Any]] = []
 
     def register_component(self, component: Component[Any]) -> None:
         qualifier: Optional[str] = component.metadata.qualifier
@@ -21,13 +21,9 @@ class Container:
         self._components.append(component)
 
     def _already_exists(self, qualifier: str) -> bool:
-        for component in self._components:
-            if component.metadata.qualifier == qualifier:
-                return True
+        return any(component.metadata.qualifier == qualifier for component in self._components)
 
-        return False
-
-    def get_components(self, kind: Type[T]) -> List[Component[T]]:
+    def get_components(self, kind: type[T]) -> list[Component[T]]:
         return list(
             filter(
                 lambda component: component.metadata.kind == kind,

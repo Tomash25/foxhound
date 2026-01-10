@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar, Type
+from typing import Generic, TypeVar
 
 from pydantic import BaseModel, model_validator
 
@@ -13,7 +13,7 @@ class Component(BaseModel, Generic[T]):
 
     @model_validator(mode='after')
     def _validate_type_match(self) -> 'Component[T]':
-        expected_type: Type[T] = self.metadata.kind
+        expected_type: type[T] = self.metadata.kind
         actual_value: T = self.value
 
         if not isinstance(actual_value, expected_type):
