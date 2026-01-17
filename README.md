@@ -104,6 +104,3 @@ Progress? true
 ```
 
 This method is very simple, yet not very efficient. All dependencies are declared in advanced, meaning they could be mapped into a graph, iterable much more efficiently (but not enough to get my lazy ass to actually implement it).
-
-### Meta-Definition
-This section is here because meta-definitions shouldn't be used without a good grasp of the wiring process. If a Component is of kind Component Definition it would be inflated just like any other component, except its value would enter the inflation task queue rather than the Container. At it's current state - pretty useless and can create wiring issues, but acts as a foundation to potential 0-N Components from a single definition.

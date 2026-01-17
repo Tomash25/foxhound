@@ -29,10 +29,7 @@ def inflate(container: Container, component_definitions: list[ComponentDefinitio
             progressed = True
             value: Any = wiring_result.value()
 
-            if issubclass(task.component_metadata.kind, ComponentDefinition):
-                inflation_tasks.append(value)
-            else:
-                container.register_component(Component(metadata=task.component_metadata, value=value))
+            container.register_component(Component(metadata=task.component_metadata, value=value))
 
             inflation_tasks.remove(task)
 
