@@ -7,7 +7,7 @@ def validate_concrete_parameters(signature: inspect.Signature) -> None:
     for name, parameter in signature.parameters.items():
         if parameter.annotation == inspect.Parameter.empty:
             raise TypeError(f'Parameter "{name}" is missing type hinting annotation')
-        if _is_union_type(parameter):
+        if _is_union_type(parameter.annotation):
             raise TypeError(f'Parameter "{name}" is type hinted as a union type')
 
 
