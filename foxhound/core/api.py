@@ -8,7 +8,7 @@ from foxhound.core.component_metadata import ComponentMetadata
 from foxhound.core.container import Container
 from foxhound.core.inflation import inflate
 from foxhound.core.result import Result
-from foxhound.core.signature_tools import fully_hinted, parameters_hinted
+from foxhound.core.signature_tools import validate_concrete_parameters, validate_concrete_return_type
 from foxhound.core.wiring import try_wire_dependencies
 from foxhound.core.wiring_task import WiringTask
 
@@ -40,10 +40,10 @@ def define_component(
     signature: inspect.Signature = inspect.signature(target)
 
     if inspect.isclass(target):
-        assert parameters_hinted(signature), 'Component constructor parameters must be annotated with type hinting'
+        _validate_ctor_signature(signature)
         return_type = target
     else:
-        assert fully_hinted(signature), 'Component function must be fully annotated with type hinting'
+        _validate_function_signature(signature)
         return_type: type[T] = signature.return_annotation
 
     return ComponentDefinition[return_type](
@@ -61,7 +61,7 @@ def wire(
 ) -> Callable[[], T]:
     def decorator(func: Callable[..., T]) -> Callable[[], Callable[[], T]]:
         signature: inspect.Signature = inspect.signature(func)
-        assert parameters_hinted(signature), 'Wired function parameters must be annotated with type hinting'
+        _validate_function_signature(signature)
 
         def wrapper() -> Callable[[], T]:
             if not _INFLATED:
@@ -80,6 +80,25 @@ def wire(
         return wrapper
 
     return decorator
+
+
+def _validate_function_signature(signature: inspect.Signature) -> None:
+    try:
+        validate_concrete_parameters(signature)
+    except TypeError as e:
+        raise TypeError('Function parameters must be strongly type hinted for DI') from e
+
+    try:
+        validate_concrete_return_type(signature)
+    except TypeError as e:
+        raise TypeError('Function return type must be strongly hinted for DI') from e
+
+
+def _validate_ctor_signature(signature: inspect.Signature) -> None:
+    try:
+        validate_concrete_parameters(signature)
+    except TypeError as e:
+        raise TypeError('Class constructor parameters must be strongly type hinted for DI') from e
 
 
 def start() -> None:
