@@ -47,15 +47,15 @@ def _find_qualified_component(container: Container, kind: type[T], qualifier: st
     if len(potential_matches) > 0:
         return Result.fail(
             ValueError(
-                f'No registered component of {kind} with qualifier "{qualifier}". '
+                f'No registered component matching {kind} with qualifier "{qualifier}". '
                 f'However, {len(potential_matches)} other components of the same kind are registered.'
             )
         )
 
     return Result.fail(
         ValueError(
-            f'No registered component of {kind} with qualifier "{qualifier}". '
-            f'In fact, no component of {kind} has been found at all.'
+            f'No registered component matching {kind} with qualifier "{qualifier}". '
+            f'In fact, no component matching {kind} has been found at all.'
         )
     )
 
@@ -64,13 +64,13 @@ def _find_unqualified_component(container: Container, kind: type[T]) -> Result[C
     matching_components: list[Component[T]] = container.get_components(kind)
 
     if len(matching_components) < 1:
-        return Result.fail(ValueError(f'No registered component of {kind}'))
+        return Result.fail(ValueError(f'No registered component matching {kind}'))
     if len(matching_components) == 1:
         return Result.ok(matching_components[0])
 
     return Result.fail(
         ValueError(
-            f'Multiple components of {kind} were found. '
+            f'Multiple components matching {kind} were found. '
             f'Specific component can be selected by specifying a qualifier.'
         )
     )

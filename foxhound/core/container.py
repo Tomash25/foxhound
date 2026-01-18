@@ -26,7 +26,7 @@ class Container:
     def get_components(self, kind: type[T]) -> list[Component[T]]:
         return list(
             filter(
-                lambda component: component.metadata.kind == kind,
+                lambda component: issubclass(component.metadata.kind, kind),
                 self._components
             )
         )
