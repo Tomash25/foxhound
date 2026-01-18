@@ -8,7 +8,7 @@ from foxhound.core.component_metadata import ComponentMetadata
 from foxhound.core.container import Container
 from foxhound.core.inflation import inflate
 from foxhound.core.result import Result
-from foxhound.core.signature_tools import validate_concrete_parameters, validate_concrete_return_type
+from foxhound.core.typing_tools import validate_concrete_parameters, validate_concrete_return_type
 from foxhound.core.wiring import try_wire_dependencies
 from foxhound.core.wiring_task import WiringTask
 
