@@ -1,6 +1,7 @@
 from typing import Any, TypeVar
 
 from foxhound.core.component import Component
+from foxhound.core.typing_tools import is_assignable_to
 
 T = TypeVar('T')
 
@@ -26,7 +27,7 @@ class Container:
     def get_components(self, kind: type[T]) -> list[Component[T]]:
         return list(
             filter(
-                lambda component: issubclass(component.metadata.kind, kind),
+                lambda component: is_assignable_to(component.metadata.kind, kind),
                 self._components
             )
         )

@@ -1,6 +1,7 @@
 import inspect
 import logging
 from collections.abc import Callable
+from types import GenericAlias
 from typing import Any, TypeVar
 
 from foxhound.core.component_definition import ComponentDefinition
@@ -8,7 +9,7 @@ from foxhound.core.component_metadata import ComponentMetadata
 from foxhound.core.container import Container
 from foxhound.core.inflation import inflate
 from foxhound.core.result import Result
-from foxhound.core.signature_tools import validate_concrete_parameters, validate_concrete_return_type
+from foxhound.core.typing_tools import validate_concrete_parameters, validate_concrete_return_type
 from foxhound.core.wiring import try_wire_dependencies
 from foxhound.core.wiring_task import WiringTask
 
@@ -41,13 +42,13 @@ def define_component(
 
     if inspect.isclass(target):
         _validate_ctor_signature(signature)
-        return_type = target
+        return_type: type = target
     else:
         _validate_function_signature(signature)
-        return_type: type[T] = signature.return_annotation
+        return_type: type | GenericAlias = signature.return_annotation
 
-    return ComponentDefinition[return_type](
-        component_metadata=ComponentMetadata[return_type](
+    return ComponentDefinition(
+        component_metadata=ComponentMetadata(
             qualifier=qualifier,
             kind=return_type
         ),
@@ -58,12 +59,12 @@ def define_component(
 
 def wire(
         param_qualifiers: dict[str, str] | None = None
-) -> Callable[[], T]:
-    def decorator(func: Callable[..., T]) -> Callable[[], Callable[[], T]]:
+) -> Callable[[Callable[..., T]], Callable[[], T]]:
+    def decorator(func: Callable[..., T]) -> Callable[[], T]:
         signature: inspect.Signature = inspect.signature(func)
         _validate_function_signature(signature)
 
-        def wrapper() -> Callable[[], T]:
+        def wrapper() -> T:
             if not _INFLATED:
                 logging.warning('Cannot wire dependencies; container isn\'t inflated. Make sure start() was called')
                 pass
@@ -73,7 +74,8 @@ def wire(
             )
 
             if wiring_result.successful:
-                return wiring_result.value()
+                wired_func: Callable[[], T] = wiring_result.value
+                return wired_func()
 
             raise wiring_result.exception
 
