@@ -59,12 +59,12 @@ def define_component(
 
 def wire(
         param_qualifiers: dict[str, str] | None = None
-) -> Callable[[], T]:
-    def decorator(func: Callable[..., T]) -> Callable[[], Callable[[], T]]:
+) -> Callable[[Callable[..., T]], Callable[[], T]]:
+    def decorator(func: Callable[..., T]) -> Callable[[], T]:
         signature: inspect.Signature = inspect.signature(func)
         _validate_function_signature(signature)
 
-        def wrapper() -> Callable[[], T]:
+        def wrapper() -> T:
             if not _INFLATED:
                 logging.warning('Cannot wire dependencies; container isn\'t inflated. Make sure start() was called')
                 pass
@@ -74,7 +74,8 @@ def wire(
             )
 
             if wiring_result.successful:
-                return wiring_result.value()
+                wired_func: Callable[[], T] = wiring_result.value
+                return wired_func()
 
             raise wiring_result.exception
 
