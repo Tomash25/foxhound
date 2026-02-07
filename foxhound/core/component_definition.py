@@ -8,6 +8,6 @@ T = TypeVar('T')
 
 
 class ComponentDefinition(BaseModel, Generic[T]):
-    component_metadata: ComponentMetadata[T]
+    component_metadata: ComponentMetadata
     inflator: Callable[..., T]
     param_qualifiers: dict[str, str] = {}

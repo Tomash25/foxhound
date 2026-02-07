@@ -1,6 +1,7 @@
 import inspect
 import logging
 from collections.abc import Callable
+from types import GenericAlias
 from typing import Any, TypeVar
 
 from foxhound.core.component_definition import ComponentDefinition
@@ -41,13 +42,13 @@ def define_component(
 
     if inspect.isclass(target):
         _validate_ctor_signature(signature)
-        return_type = target
+        return_type: type = target
     else:
         _validate_function_signature(signature)
-        return_type: type[T] = signature.return_annotation
+        return_type: type | GenericAlias = signature.return_annotation
 
-    return ComponentDefinition[return_type](
-        component_metadata=ComponentMetadata[return_type](
+    return ComponentDefinition(
+        component_metadata=ComponentMetadata(
             qualifier=qualifier,
             kind=return_type
         ),
