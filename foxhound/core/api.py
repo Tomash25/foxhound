@@ -27,7 +27,7 @@ def component(
 ) -> type[T] | Callable[..., T]:
     def decorator(target: type[T] | Callable[..., T]) -> type[T] | Callable[..., T]:
         component_definition: ComponentDefinition[T] = define_component(target, qualifier, param_qualifiers)
-        _COMPONENT_DEFINITIONS.append(component_definition)
+        register_component_definition(component_definition)
         return target
 
     return decorator
@@ -55,6 +55,10 @@ def define_component(
         param_qualifiers={} if param_qualifiers is None else param_qualifiers,
         inflator=target
     )
+
+
+def register_component_definition(definition: ComponentDefinition[T]) -> None:
+    _COMPONENT_DEFINITIONS.append(definition)
 
 
 def wire(
