@@ -5,7 +5,7 @@ import yaml
 
 from foxhound import component
 
-_CONFIGURATION_PATH_ENV_VAR = 'CONFIGURATION_PATH'
+_CONFIGURATION_PATH_ENV_VAR = 'FOXHOUND_CONFIGURATION_PATH'
 _DEFAULT_CONFIGURATION_PATH = 'application.yaml'
 
 ConfigurationSection = dict[str, Union[str, 'ConfigurationSection']]
