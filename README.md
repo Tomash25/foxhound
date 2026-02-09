@@ -10,7 +10,7 @@ Multiple Components of the same type can exist in the same Container. To select 
 So, each Component has a _kind_ and an optional _qualifier_.  
 Each qualifier must be unique.  
 
-## Usage
+## Basic Usage
 To define a Component we can use the `component` decorator on both classes and functions:
 - If used on a function, the dependencies and kind will be inferred entirely from type annotations (arguments and return type), and for this exact reason they are mandatory.
 - If used on a class, the dependencies will be inferred similarly from the constructor, and the kind from the class itself.
@@ -23,7 +23,7 @@ Initialize the DI process via the `start` function.
 
 ```python
 from foxhound import start, wire
-from foxhound.core import component
+from foxhound import component
 
 
 @component()
@@ -58,7 +58,7 @@ Use the `param_qualifier` parameter (of both `component` and `wire`) to select C
 
 ```python
 from foxhound import start, wire
-from foxhound.core import component
+from foxhound import component
 
 
 @component(qualifier='major_zero')
@@ -83,6 +83,41 @@ if __name__ == '__main__':
 ```
 SEND 140.85
 ```
+
+## Configuration
+Components can also be inflated via YAML configuration files.   
+To define such component, we can use the `configuration` decorator (from `foxhound.configuration`) like so:
+
+<!-- filename: main.py -->
+```python
+from foxhound import wire, start
+from foxhound.configuration import configuration
+
+@configuration(section='agent')
+class Agent:
+    def __init__(self, codename: str):
+        self.codename = codename
+
+@wire()
+def call_agent(agent: Agent) -> None:
+    print(f'{agent.codename}, do you copy?')
+
+
+if __name__ == '__main__':
+    start()
+    call_agent()
+```
+<!-- filename: application.yaml -->
+```yaml
+agent:
+  codename: Configured Snake
+```
+```
+Configured Snake, do you copy?
+```
+
+Supported types are PyYAML's default supported values (bool, int, float, list, dict, etc.) and Pydantic's BaseModel (uses `model_validate`).  
+Configuration file path can be configured using the `FOXHOUND_CONFIGURATION_PATH` environment variable (default value is "application.yaml").  
 
 ## How It Works
 When a class or a function is decorated as `component`, a Component Definition is registered. These define how to inflate the Component (a function with parameter qualifiers, if any), alongside some metadata (its own qualifier and kind).  
