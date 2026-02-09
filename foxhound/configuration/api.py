@@ -2,10 +2,11 @@ import inspect
 from collections.abc import Callable
 from typing import Any, TypeVar
 
+from pydantic import BaseModel
+
 from foxhound import ComponentDefinition, define_component
 from foxhound.configuration.configuration_reader import ConfigurationReader, ConfigurationSection
 from foxhound.core.api import register_component_definition
-from foxhound.core.base_model import BaseModel
 from foxhound.core.typing_tools import simplify_parameters
 
 T = TypeVar('T')
