@@ -20,13 +20,13 @@ _WIRING_TASKS: list[WiringTask] = []
 
 T = TypeVar('T')
 
-
 def component(
         qualifier: str | None = None,
+        primary: bool = False,
         param_qualifiers: dict[str, str] | None = None
 ) -> type[T] | Callable[..., T]:
     def decorator(target: type[T] | Callable[..., T]) -> type[T] | Callable[..., T]:
-        component_definition: ComponentDefinition[T] = define_component(target, qualifier, param_qualifiers)
+        component_definition: ComponentDefinition[T] = define_component(target, qualifier, primary, param_qualifiers)
         register_component_definition(component_definition)
         return target
 
@@ -36,6 +36,7 @@ def component(
 def define_component(
         target: type[T] | Callable[..., T],
         qualifier: str | None = None,
+        primary: bool = False,
         param_qualifiers: dict[str, str] | None = None
 ) -> ComponentDefinition[T]:
     signature: inspect.Signature = inspect.signature(target)
@@ -50,6 +51,7 @@ def define_component(
     return ComponentDefinition(
         component_metadata=ComponentMetadata(
             qualifier=qualifier,
+            primary=primary,
             kind=return_type
         ),
         param_qualifiers={} if param_qualifiers is None else param_qualifiers,
