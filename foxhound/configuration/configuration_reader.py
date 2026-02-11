@@ -1,4 +1,5 @@
 import os
+from functools import cached_property
 from typing import Union
 
 import yaml
@@ -13,11 +14,8 @@ ConfigurationSection = dict[str, Union[str, 'ConfigurationSection']]
 
 @component()
 class ConfigurationReader:
-    def __init__(self):
-        self._configuration: ConfigurationSection = self._load_configuration()
-
-    @classmethod
-    def _load_configuration(cls) -> ConfigurationSection:
+    @cached_property
+    def _configuration(self) -> ConfigurationSection:
         if _CONFIGURATION_PATH_ENV_VAR in os.environ:
             configuration_path: str = os.environ[_CONFIGURATION_PATH_ENV_VAR]
         else:
