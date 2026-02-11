@@ -12,8 +12,9 @@ from foxhound.core.typing_tools import simplify_parameters
 T = TypeVar('T')
 
 def configuration(
-        qualifier: str | None = None,
         section: str | None = None,
+        qualifier: str | None = None,
+        primary: bool = False
 ) -> type[T] | Callable[..., T]:
     def decorator(target: type[T] | Callable[..., T]) -> type[T] | Callable[..., T]:
         def inflator(reader: ConfigurationReader) -> T:
@@ -22,8 +23,7 @@ def configuration(
             except TypeError as e:
                 raise TypeError(f'Cannot load {target} from configuration at section "{section}"') from e
 
-        component_definition: ComponentDefinition[T] = define_component(target)
-        component_definition.component_metadata.qualifier = qualifier
+        component_definition: ComponentDefinition[T] = define_component(target, qualifier, primary)
         component_definition.inflator = inflator
 
         register_component_definition(component_definition)

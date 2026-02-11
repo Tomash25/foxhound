@@ -63,15 +63,27 @@ def _find_qualified_component(container: Container, kind: type[T], qualifier: st
 def _find_unqualified_component(container: Container, kind: type[T]) -> Result[Component[T]]:
     matching_components: list[Component[T]] = container.get_components(kind)
 
-    if len(matching_components) < 1:
+    if len(matching_components) == 0:
         return Result.fail(ValueError(f'No registered component matching {kind}'))
     if len(matching_components) == 1:
         return Result.ok(matching_components[0])
 
+    primary_components: list[Component[T]] = list(filter(lambda component: component.metadata.primary, matching_components))
+
+    if len(primary_components) == 0:
+        return Result.fail(
+            ValueError(
+                f'Multiple components matching {kind} were found. '
+                f'Specific component can be selected by specifying a qualifier or a primary component.'
+            )
+        )
+    if len(primary_components) == 1:
+        return Result.ok(primary_components[0])
+
     return Result.fail(
         ValueError(
-            f'Multiple components matching {kind} were found. '
-            f'Specific component can be selected by specifying a qualifier.'
+            f'Multiple components matching {kind} were found, and multiple of them are marked as primary. '
+            f'Specific component can be selected by specifying a qualifier, or exactly one primary component.'
         )
     )
 
