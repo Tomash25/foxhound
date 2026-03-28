@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from typing import Any
 
-from foxhound.core.base_model import BaseModel
+from foxhound.core.model.base_model import BaseModel
 
 
 class WiringTask(BaseModel):

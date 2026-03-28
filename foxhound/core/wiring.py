@@ -2,9 +2,9 @@ import inspect
 from collections.abc import Callable
 from typing import Any, TypeVar
 
-from foxhound.core.component import Component
+from foxhound.core.model.component import Component
 from foxhound.core.container import Container
-from foxhound.core.result import Result
+from foxhound.core.model.result import Result
 from foxhound.core.typing_tools import simplify_parameters
 
 T = TypeVar('T')

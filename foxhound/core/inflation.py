@@ -1,10 +1,10 @@
 from collections.abc import Callable
 from typing import Any, TypeVar
 
-from foxhound.core.component import Component
-from foxhound.core.component_definition import ComponentDefinition
+from foxhound.core.model.component import Component
+from foxhound.core.model.component_definition import ComponentDefinition
 from foxhound.core.container import Container
-from foxhound.core.result import Result
+from foxhound.core.model.result import Result
 from foxhound.core.wiring import try_wire_dependencies
 
 T = TypeVar('T')

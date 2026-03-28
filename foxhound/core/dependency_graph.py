@@ -3,8 +3,8 @@ from typing import Any
 
 from networkx import DiGraph
 
-from foxhound.core.component_definition import ComponentDefinition
-from foxhound.core.component_metadata import ComponentMetadata
+from foxhound.core.model.component_definition import ComponentDefinition
+from foxhound.core.model.component_metadata import ComponentMetadata
 from foxhound.core.typing_tools import is_assignable_to, simplify_parameters
 
 
