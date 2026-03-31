@@ -6,6 +6,8 @@ from networkx import DiGraph
 
 from foxhound.core.model.component_definition import ComponentDefinition
 from foxhound.core.model.component_metadata import ComponentMetadata
+from foxhound.core.model.parameter import Parameter
+from foxhound.core.parameter_tools import parse_parameters
 from foxhound.core.typing_tools import is_assignable_to, simplify_arguments
 
 
@@ -34,17 +36,15 @@ def _map_components(graph: DiGraph, component_definitions: list[ComponentDefinit
             definition=definition
         )
 
-        parameters: dict[str, type[Any]] = _simplify_parameters(definition)
+        parameters: list[Parameter] = parse_parameters(definition)
 
-        for name, kind in parameters.items():
-            parameter_node_id: str = f'{name}@{component_node_id}'
+        for parameter in parameters:
+            parameter_node_id: str = f'{parameter.name}@{component_node_id}'
 
             graph.add_node(
                 parameter_node_id,
                 type=NodeType.PARAMETER,
-                name=name,
-                kind=kind,
-                qualifier=definition.param_qualifiers.get(name)
+                properties=parameter
             )
 
             graph.add_edge(parameter_node_id, component_node_id)
@@ -53,11 +53,14 @@ def _map_components(graph: DiGraph, component_definitions: list[ComponentDefinit
 def _map_dependencies(graph: DiGraph):
     all_parameters: list[tuple[str, dict[str, Any]]] = _filter_node_type(graph, NodeType.PARAMETER)
 
-    for parameter_id, properties in all_parameters:
-        kind: type = properties.get('kind')
-        qualifier: str | None = properties.get('qualifier')
+    for parameter_id, additional_data in all_parameters:
+        properties: Parameter = additional_data['properties']
 
-        satisfying_component_id: str | None = _try_find_dependency(graph, kind, qualifier)
+        satisfying_component_id: str | None = _try_find_dependency(
+            graph,
+            properties.kind,
+            properties.qualifier
+        )
 
         if satisfying_component_id is not None:
             graph.add_edge(parameter_id, satisfying_component_id)
@@ -73,8 +76,8 @@ def _try_find_dependency(graph: DiGraph, kind: type, qualifier: str | None) -> s
 def _find_qualified_component(graph: DiGraph, kind: type, qualifier: str) -> str | None:
     all_components: list[tuple[str, dict[str, Any]]] = _filter_node_type(graph, NodeType.COMPONENT)
 
-    for component_id, properties in all_components:
-        metadata: ComponentMetadata = properties.get('definition').component_metadata
+    for component_id, additional_data in all_components:
+        metadata: ComponentMetadata = additional_data['definition'].component_metadata
 
         if is_assignable_to(metadata.kind, kind) and metadata.qualifier == qualifier:
             return component_id
@@ -86,9 +89,9 @@ def _find_unqualified_component(graph: DiGraph, kind: type) -> str | None:
     all_components: list[tuple[str, dict[str, Any]]] = _filter_node_type(graph, NodeType.COMPONENT)
 
     matches: list[tuple[str, ComponentDefinition]] = [
-        (component_id, properties.get('definition'))
-        for component_id, properties in all_components
-        if is_assignable_to(properties.get('definition').component_metadata.kind, kind)
+        (component_id, additional_data['definition'])
+        for component_id, additional_data in all_components
+        if is_assignable_to(additional_data['definition'].component_metadata.kind, kind)
     ]
 
     if len(matches) == 1:
@@ -126,8 +129,8 @@ def _assert_unique_qualifiers(component_definitions: list[ComponentDefinition]) 
 
 def _filter_node_type(graph: DiGraph, node_type: NodeType) -> list[tuple[str, dict[str, Any]]]:
     return [
-        (node_id, properties) for node_id, properties in graph.nodes(data=True)
-        if properties.get('type') == node_type
+        (node_id, additional_data) for node_id, additional_data in graph.nodes(data=True)
+        if additional_data['type'] == node_type
     ]
 
 
