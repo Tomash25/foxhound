@@ -23,7 +23,7 @@ def try_wire_dependencies(
         component_lookup: Result[Any] = _find_component(container, kind, qualifier)
 
         if not component_lookup.successful:
-            return Result.fail(component_lookup.exception)
+            return Result.error(component_lookup.exception)
 
         implementations.append(component_lookup.value.value)
 
@@ -45,14 +45,14 @@ def _find_qualified_component(container: Container, kind: type[T], qualifier: st
             return Result.ok(component)
 
     if len(potential_matches) > 0:
-        return Result.fail(
+        return Result.error(
             ValueError(
                 f'No registered component matching {kind} with qualifier "{qualifier}". '
                 f'However, {len(potential_matches)} other components of the same kind are registered.'
             )
         )
 
-    return Result.fail(
+    return Result.error(
         ValueError(
             f'No registered component matching {kind} with qualifier "{qualifier}". '
             f'In fact, no component matching {kind} has been found at all.'
@@ -64,14 +64,14 @@ def _find_unqualified_component(container: Container, kind: type[T]) -> Result[C
     matching_components: list[Component[T]] = container.get_components(kind)
 
     if len(matching_components) == 0:
-        return Result.fail(ValueError(f'No registered component matching {kind}'))
+        return Result.error(ValueError(f'No registered component matching {kind}'))
     if len(matching_components) == 1:
         return Result.ok(matching_components[0])
 
     primary_components: list[Component[T]] = list(filter(lambda component: component.metadata.primary, matching_components))
 
     if len(primary_components) == 0:
-        return Result.fail(
+        return Result.error(
             ValueError(
                 f'Multiple components matching {kind} were found. '
                 f'Specific component can be selected by specifying a qualifier or a primary component.'
@@ -80,7 +80,7 @@ def _find_unqualified_component(container: Container, kind: type[T]) -> Result[C
     if len(primary_components) == 1:
         return Result.ok(primary_components[0])
 
-    return Result.fail(
+    return Result.error(
         ValueError(
             f'Multiple components matching {kind} were found, and multiple of them are marked as primary. '
             f'Specific component can be selected by specifying a qualifier, or exactly one primary component.'

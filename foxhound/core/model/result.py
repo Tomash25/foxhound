@@ -11,14 +11,15 @@ class Result(BaseModel, Generic[T]):
     successful: bool
     value: T | None = None
     exception: Exception | None = None
+    hint: str | None = None
 
     @classmethod
     def ok(cls, value: T) -> 'Result[T]':
         return cls(successful=True, value=value)
 
     @classmethod
-    def fail(cls, exception: Exception) -> 'Result[T]':
-        return cls(successful=False, exception=exception)
+    def error(cls, exception: Exception, hint: str | None = None) -> 'Result[T]':
+        return cls(successful=False, exception=exception, hint=hint)
 
     @model_validator(mode='after')
     def _check_consistency(self) -> 'Result[T]':
