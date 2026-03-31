@@ -1,7 +1,5 @@
 from typing import Generic, TypeVar
 
-from pydantic import model_validator
-
 from foxhound.core.model.base_model import BaseModel
 
 T = TypeVar('T')
@@ -24,13 +22,3 @@ class Result(BaseModel, Generic[T]):
     @classmethod
     def error(cls, exception: Exception, hint: str | None = None) -> 'Result[T]':
         return cls(successful=False, exception=exception, hint=hint)
-
-    @model_validator(mode='after')
-    def _check_consistency(self) -> 'Result[T]':
-        if self.successful:
-            if self.exception is not None:
-                raise ValueError('Successful result cannot have an exception')
-        else:
-            if self.value is not None:
-                raise ValueError('Failed result cannot have a value')
-        return self
