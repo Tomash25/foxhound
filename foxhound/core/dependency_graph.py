@@ -6,7 +6,7 @@ from networkx import DiGraph
 
 from foxhound.core.model.component_definition import ComponentDefinition
 from foxhound.core.model.component_metadata import ComponentMetadata
-from foxhound.core.typing_tools import is_assignable_to, simplify_parameters
+from foxhound.core.typing_tools import is_assignable_to, simplify_arguments
 
 
 class NodeType(Enum):
@@ -132,4 +132,4 @@ def _filter_node_type(graph: DiGraph, node_type: NodeType) -> list[tuple[str, di
 
 
 def _simplify_parameters(component_definition: ComponentDefinition) -> dict[str, type[Any]]:
-    return simplify_parameters(inspect.signature(component_definition.inflator))
+    return simplify_arguments(inspect.signature(component_definition.inflator))

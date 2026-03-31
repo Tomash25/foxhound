@@ -5,7 +5,7 @@ from typing import Any, TypeVar
 from foxhound.core.model.component import Component
 from foxhound.core.container import Container
 from foxhound.core.model.result import Result
-from foxhound.core.typing_tools import simplify_parameters
+from foxhound.core.typing_tools import simplify_arguments
 
 T = TypeVar('T')
 
@@ -89,4 +89,4 @@ def _find_unqualified_component(container: Container, kind: type[T]) -> Result[C
 
 
 def _infer_dependencies(func: Callable[..., Any]) -> dict[str, type[Any]]:
-    return simplify_parameters(inspect.signature(func))
+    return simplify_arguments(inspect.signature(func))

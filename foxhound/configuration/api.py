@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from foxhound import ComponentDefinition, define_component
 from foxhound.configuration.configuration_reader import ConfigurationReader, ConfigurationSection
 from foxhound.core.api import register_component_definition
-from foxhound.core.typing_tools import simplify_parameters
+from foxhound.core.typing_tools import simplify_arguments
 
 T = TypeVar('T')
 
@@ -37,7 +37,7 @@ def _parse_parameters(
         target: type[T] | Callable[..., T],
         configuration_section: ConfigurationSection
 ) -> dict[str, Any]:
-    parameter_types: dict[str, type[Any]] = simplify_parameters(inspect.signature(target))
+    parameter_types: dict[str, type[Any]] = simplify_arguments(inspect.signature(target))
     parsed_parameters: dict[str, Any] = {}
 
     for key, value in configuration_section.items():

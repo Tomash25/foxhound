@@ -43,7 +43,7 @@ def is_generic(target: type) -> bool:
     return get_origin(target) is not None
 
 
-def simplify_parameters(signature: Signature) -> dict[str, type[Any]]:
+def simplify_arguments(signature: Signature) -> dict[str, type[Any]]:
     return {
         name: param.annotation
         for name, param in signature.parameters.items()
