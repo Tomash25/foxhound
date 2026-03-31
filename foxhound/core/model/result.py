@@ -18,6 +18,10 @@ class Result(BaseModel, Generic[T]):
         return cls(successful=True, value=value)
 
     @classmethod
+    def fail(cls, hint: str | None = None) -> 'Result[T]':
+        return cls(successful=False, hint=hint)
+
+    @classmethod
     def error(cls, exception: Exception, hint: str | None = None) -> 'Result[T]':
         return cls(successful=False, exception=exception, hint=hint)
 
