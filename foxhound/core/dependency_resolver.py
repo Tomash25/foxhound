@@ -24,7 +24,7 @@ class BasicDependencyResolver(DependencyResolver):
         kind: type | GenericAlias = dependency.kind
         qualifier: str = dependency.qualifier
 
-        type_matches: list[ComponentDefinition] = self._filter_matching_candidates(kind, candidates)
+        type_matches: list[ComponentDefinition] = self._filter_matching_candidates(dependency, candidates)
 
         if len(type_matches) == 0:
             return Result.fail(
@@ -44,7 +44,7 @@ class BasicDependencyResolver(DependencyResolver):
     def _find_unqualified_component(self, dependency: Parameter, candidates: list[ComponentDefinition]) -> Result[str]:
         kind: type | GenericAlias = dependency.kind
 
-        type_matches: list[ComponentDefinition] = self._filter_matching_candidates(kind, candidates)
+        type_matches: list[ComponentDefinition] = self._filter_matching_candidates(dependency, candidates)
 
         if len(type_matches) == 0:
             return Result.fail('No registered component matching {kind}')
@@ -75,10 +75,11 @@ class BasicDependencyResolver(DependencyResolver):
 
     def _filter_matching_candidates(
             self,
-            kind: type,
+            dependency: Parameter,
             candidates: list[ComponentDefinition]
     ) -> list[ComponentDefinition]:
         return [
             candidate for candidate in candidates
-            if is_assignable_to(candidate.component_metadata.kind, kind)
+            if is_assignable_to(candidate.component_metadata.kind, dependency.kind)
+            and candidate.id != dependency.parent_component_id
         ]
