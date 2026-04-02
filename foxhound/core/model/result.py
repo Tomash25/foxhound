@@ -20,8 +20,8 @@ class Result(BaseModel, Generic[T]):
         return cls(successful=False, hint=hint)
 
     @classmethod
-    def incomplete(cls, value: T) -> 'Result[T]':
-        return cls(successful=False, value=value)
+    def incomplete(cls, value: T, exception: Exception | None, hint: str | None = None) -> 'Result[T]':
+        return cls(successful=False, value=value, exception=exception, hint=hint)
 
     @classmethod
     def bad(cls, value: T, exception: Exception | None, hint: str | None = None) -> 'Result[T]':
