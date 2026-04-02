@@ -50,17 +50,17 @@ class DependencyGraphMapper:
 
                 graph.add_edge(parameter_node_id, component_node_id)
 
-    def _map_dependencies(self, graph: DiGraph, definitions: list[ComponentDefinition]) -> dict[str, Result[str]]:
-        mapping_results: dict[str, Result[str]] = {}
+    def _map_dependencies(self, graph: DiGraph, definitions: list[ComponentDefinition]) -> dict[Parameter, Result[str]]:
+        mapping_results: dict[Parameter, Result[str]] = {}
         all_parameters: dict[str, Parameter] = self._filter_parameter_nodes(graph)
 
-        for parameter_id, properties in all_parameters.items():
-            dependency_resolution: Result[str] = self._dependency_resolver.try_resolve(properties, definitions)
+        for parameter_node_id, parameter in all_parameters.items():
+            dependency_resolution: Result[str] = self._dependency_resolver.try_resolve(parameter, definitions)
 
             if dependency_resolution.successful:
-                graph.add_edge(parameter_id, dependency_resolution.value)
+                graph.add_edge(parameter_node_id, dependency_resolution.value)
 
-            mapping_results[parameter_id] = dependency_resolution
+            mapping_results[parameter] = dependency_resolution
 
         return mapping_results
 
