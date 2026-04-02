@@ -1,11 +1,13 @@
 from enum import Enum
 
-from networkx import DiGraph
+from networkx import DiGraph, is_directed_acyclic_graph
 
-from foxhound.core.model.result import Result
 from foxhound.core.dependency_resolver import DependencyResolver
+from foxhound.core.exception.dependency import UnsatisfiedDependenciesError
+from foxhound.core.exception.graph import CyclicGraphError
 from foxhound.core.model.component_definition import ComponentDefinition
 from foxhound.core.model.parameter import Parameter
+from foxhound.core.model.result import Result
 from foxhound.core.parameter_tools import parse_parameters
 
 
@@ -18,14 +20,26 @@ class DependencyGraphMapper:
     def __init__(self, dependency_resolver: DependencyResolver) -> None:
         self._dependency_resolver = dependency_resolver
 
-    def map(self, component_definitions: list[ComponentDefinition]) -> DiGraph:
+    def map(self, component_definitions: list[ComponentDefinition]) -> Result[DiGraph]:
         self._assert_unique_qualifiers(component_definitions)
 
         graph: DiGraph = DiGraph()
         self._map_components(graph, component_definitions)
-        self._map_dependencies(graph, component_definitions)
 
-        return graph
+        dependency_mapping_results: dict[Parameter, Result[str]] = self._map_dependencies(graph, component_definitions)
+
+        mapping_failures: dict[Parameter, str] = {
+            parameter: result.hint
+            for parameter, result in dependency_mapping_results.items() if not result.successful
+        }
+
+        if len(mapping_failures) != 0:
+            return Result.incomplete(graph, UnsatisfiedDependenciesError(mapping_failures))
+
+        if not is_directed_acyclic_graph(graph):
+            return Result.bad(graph, CyclicGraphError(graph))
+
+        return Result.ok(graph)
 
     def _map_components(self, graph: DiGraph, component_definitions: list[ComponentDefinition]) -> None:
         for definition in component_definitions:
