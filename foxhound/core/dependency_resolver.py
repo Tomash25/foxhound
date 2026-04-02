@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from types import GenericAlias
 
-from foxhound import ComponentDefinition, Result
+from foxhound.core.model.component_definition import ComponentDefinition
+from foxhound.core.model.result import Result
 from foxhound.core.model.parameter import Parameter
 from foxhound.core.typing_tools import is_assignable_to
 

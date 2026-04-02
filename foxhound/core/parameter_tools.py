@@ -1,7 +1,7 @@
 import inspect
 from typing import Any
 
-from foxhound import ComponentDefinition
+from foxhound.core.model.component_definition import ComponentDefinition
 from foxhound.core.model.parameter import Parameter
 from foxhound.core.typing_tools import simplify_arguments
 
