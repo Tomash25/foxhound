@@ -18,7 +18,7 @@ class DependencyGraphMapper:
     def __init__(self, dependency_resolver: DependencyResolver) -> None:
         self._dependency_resolver = dependency_resolver
 
-    def map_dependency_graph(self, component_definitions: list[ComponentDefinition]) -> DiGraph:
+    def map(self, component_definitions: list[ComponentDefinition]) -> DiGraph:
         self._assert_unique_qualifiers(component_definitions)
 
         graph: DiGraph = DiGraph()
