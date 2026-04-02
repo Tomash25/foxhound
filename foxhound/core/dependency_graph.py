@@ -26,15 +26,10 @@ class DependencyGraphMapper:
         graph: DiGraph = DiGraph()
         self._map_components(graph, component_definitions)
 
-        dependency_mapping_results: dict[Parameter, Result[str]] = self._map_dependencies(graph, component_definitions)
+        dependency_mapping: Result[None] = self._map_dependencies(graph, component_definitions)
 
-        mapping_failures: dict[Parameter, str] = {
-            parameter: result.hint
-            for parameter, result in dependency_mapping_results.items() if not result.successful
-        }
-
-        if len(mapping_failures) != 0:
-            return Result.incomplete(graph, UnsatisfiedDependenciesError(mapping_failures))
+        if not dependency_mapping.successful:
+            return Result.incomplete(graph, dependency_mapping.exception)
 
         if not is_directed_acyclic_graph(graph):
             return Result.bad(graph, CyclicGraphError(graph))
@@ -64,19 +59,22 @@ class DependencyGraphMapper:
 
                 graph.add_edge(parameter_node_id, component_node_id)
 
-    def _map_dependencies(self, graph: DiGraph, definitions: list[ComponentDefinition]) -> dict[Parameter, Result[str]]:
-        mapping_results: dict[Parameter, Result[str]] = {}
+    def _map_dependencies(self, graph: DiGraph, definitions: list[ComponentDefinition]) -> Result[None]:
         all_parameters: dict[str, Parameter] = self._filter_parameter_nodes(graph)
+        mapping_failures: dict[Parameter, str] = {}
 
         for parameter_node_id, parameter in all_parameters.items():
             dependency_resolution: Result[str] = self._dependency_resolver.try_resolve(parameter, definitions)
 
             if dependency_resolution.successful:
                 graph.add_edge(parameter_node_id, dependency_resolution.value)
+            else:
+                mapping_failures[parameter] = dependency_resolution.hint
 
-            mapping_results[parameter] = dependency_resolution
+        if len(mapping_failures) != 0:
+            return Result.error(UnsatisfiedDependenciesError(mapping_failures))
 
-        return mapping_results
+        return Result.ok(None)
 
     def _assert_unique_qualifiers(self, component_definitions: list[ComponentDefinition]) -> None:
         for definition in component_definitions:
