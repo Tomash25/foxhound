@@ -7,3 +7,4 @@ class Parameter(BaseModel):
     name: str
     kind: type | GenericAlias
     qualifier: str | None = None
+    parent_component_id: str
