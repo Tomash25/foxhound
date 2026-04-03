@@ -60,10 +60,11 @@ class DependencyGraphMapper:
         mapping_failures: dict[Parameter, str] = {}
 
         for parameter_node_id, parameter in all_parameters.items():
-            dependency_resolution: Result[str] = self._dependency_resolver.try_resolve(parameter, definitions)
+            dependency_resolution: Result[list[str]] = self._dependency_resolver.try_resolve(parameter, definitions)
 
             if dependency_resolution.successful:
-                graph.add_edge(parameter_node_id, dependency_resolution.value)
+                for component_id in dependency_resolution.value:
+                    graph.add_edge(parameter_node_id, component_id)
             else:
                 mapping_failures[parameter] = dependency_resolution.hint
 

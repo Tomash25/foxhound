@@ -27,10 +27,15 @@ class DependencyGraphInflator:
         if existing_component is not None:
             return existing_component.value
 
-        inflated_parameters: dict[str, Any] = {
-            parameter: self._inflate_component(dependency_nodes[0], graph, container)
-            for parameter, dependency_nodes in self._parameter_dependency_nodes(component_node, graph).items()
-        }
+        inflated_parameters: dict[str, Any] = {}
+
+        for parameter, dependency_nodes in self._parameter_dependency_nodes(component_node, graph).items():
+            if len(dependency_nodes) == 1:
+                inflated_parameters[parameter] = self._inflate_component(dependency_nodes[0], graph, container)
+            else:
+                inflated_parameters[parameter] = [
+                    self._inflate_component(node, graph, container) for node in dependency_nodes
+                ]
 
         inflated_value: Any = definition.inflator(**inflated_parameters)
 
