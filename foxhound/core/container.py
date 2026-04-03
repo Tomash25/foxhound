@@ -1,15 +1,18 @@
 from typing import Any, TypeVar
 
-from foxhound.core.component import Component
+from foxhound.core.model.component import Component
 from foxhound.core.typing_tools import is_assignable_to
 
 T = TypeVar('T')
 
 
 class Container:
+    inflated: bool
+    _components: dict[str, Component[Any]]
+
     def __init__(self):
-        self.inflated: bool = False
-        self._components: list[Component[Any]] = []
+        self.inflated = False
+        self._components = {}
 
     def register_component(self, component: Component[Any]) -> None:
         qualifier: str | None = component.metadata.qualifier
@@ -19,15 +22,18 @@ class Container:
                 f'A component with qualifier "{qualifier}" already exists'
             )
 
-        self._components.append(component)
+        self._components[component.metadata.id] = component
+
+    def get_component(self, component_id: str) -> Component[Any] | None:
+        return self._components.get(component_id)
 
     def _already_exists(self, qualifier: str) -> bool:
-        return any(component.metadata.qualifier == qualifier for component in self._components)
+        return any(component.metadata.qualifier == qualifier for component in self._components.values())
 
     def get_components(self, kind: type[T]) -> list[Component[T]]:
         return list(
             filter(
                 lambda component: is_assignable_to(component.metadata.kind, kind),
-                self._components
+                self._components.values()
             )
         )

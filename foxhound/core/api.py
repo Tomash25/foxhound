@@ -1,24 +1,26 @@
 import inspect
-import logging
 from collections.abc import Callable
 from types import GenericAlias
 from typing import Any, TypeVar
 
-from foxhound.core.component_definition import ComponentDefinition
-from foxhound.core.component_metadata import ComponentMetadata
+from networkx.classes import DiGraph
+
 from foxhound.core.container import Container
-from foxhound.core.inflation import inflate
-from foxhound.core.result import Result
+from foxhound.core.dependency_resolver import DependencyResolver
+from foxhound.core.graph.inflator import DependencyGraphInflator
+from foxhound.core.graph.mapper import DependencyGraphMapper
+from foxhound.core.model.component_definition import ComponentDefinition
+from foxhound.core.model.component_metadata import ComponentMetadata
+from foxhound.core.model.result import Result
 from foxhound.core.typing_tools import validate_concrete_parameters, validate_concrete_return_type
-from foxhound.core.wiring import try_wire_dependencies
-from foxhound.core.wiring_task import WiringTask
 
 _CONTAINER = Container()
 _INFLATED = False
 _COMPONENT_DEFINITIONS: list[ComponentDefinition[Any]] = []
-_WIRING_TASKS: list[WiringTask] = []
+
 
 T = TypeVar('T')
+
 
 def component(
         qualifier: str | None = None,
@@ -49,7 +51,8 @@ def define_component(
         return_type: type | GenericAlias = signature.return_annotation
 
     return ComponentDefinition(
-        component_metadata=ComponentMetadata(
+        metadata=ComponentMetadata(
+            id=str(target),
             qualifier=qualifier,
             primary=primary,
             kind=return_type
@@ -61,33 +64,6 @@ def define_component(
 
 def register_component_definition(definition: ComponentDefinition[T]) -> None:
     _COMPONENT_DEFINITIONS.append(definition)
-
-
-def wire(
-        param_qualifiers: dict[str, str] | None = None
-) -> Callable[[Callable[..., T]], Callable[[], T]]:
-    def decorator(func: Callable[..., T]) -> Callable[[], T]:
-        signature: inspect.Signature = inspect.signature(func)
-        _validate_function_signature(signature)
-
-        def wrapper() -> T:
-            if not _INFLATED:
-                logging.warning('Cannot wire dependencies; container isn\'t inflated. Make sure start() was called')
-                pass
-
-            wiring_result: Result[Callable[[], T]] = try_wire_dependencies(
-                func, {} if param_qualifiers is None else param_qualifiers, _CONTAINER
-            )
-
-            if wiring_result.successful:
-                wired_func: Callable[[], T] = wiring_result.value
-                return wired_func()
-
-            raise wiring_result.exception
-
-        return wrapper
-
-    return decorator
 
 
 def _validate_function_signature(signature: inspect.Signature) -> None:
@@ -116,5 +92,14 @@ def start() -> None:
         return
 
     _CONTAINER = Container()
-    inflate(_CONTAINER, _COMPONENT_DEFINITIONS)
+
+    dependency_resolver: DependencyResolver = DependencyResolver()
+    graph_mapper: DependencyGraphMapper = DependencyGraphMapper(dependency_resolver)
+    dependency_graph_mapping: Result[DiGraph] = graph_mapper.map(_COMPONENT_DEFINITIONS)
+
+    if not dependency_graph_mapping.successful:
+        raise dependency_graph_mapping.exception
+
+    DependencyGraphInflator().inflate(dependency_graph_mapping.value, _CONTAINER)
+
     _INFLATED = True
