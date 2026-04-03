@@ -1,11 +1,14 @@
 import inspect
-import logging
 from collections.abc import Callable
 from types import GenericAlias
 from typing import Any, TypeVar
 
+from networkx.classes import DiGraph
+
 from foxhound.core.container import Container
-from foxhound.core.inflation import inflate
+from foxhound.core.dependency_resolver import DependencyResolver
+from foxhound.core.graph.inflator import DependencyGraphInflator
+from foxhound.core.graph.mapper import DependencyGraphMapper
 from foxhound.core.model.component_definition import ComponentDefinition
 from foxhound.core.model.component_metadata import ComponentMetadata
 from foxhound.core.model.result import Result
@@ -18,6 +21,7 @@ _COMPONENT_DEFINITIONS: list[ComponentDefinition[Any]] = []
 _WIRING_TASKS: list[WiringTask] = []
 
 T = TypeVar('T')
+
 
 def component(
         qualifier: str | None = None,
@@ -89,5 +93,14 @@ def start() -> None:
         return
 
     _CONTAINER = Container()
-    inflate(_CONTAINER, _COMPONENT_DEFINITIONS)
+
+    dependency_resolver: DependencyResolver = DependencyResolver()
+    graph_mapper: DependencyGraphMapper = DependencyGraphMapper(dependency_resolver)
+    dependency_graph_mapping: Result[DiGraph] = graph_mapper.map(_COMPONENT_DEFINITIONS)
+
+    if not dependency_graph_mapping.successful:
+        raise dependency_graph_mapping.exception
+
+    DependencyGraphInflator().inflate(dependency_graph_mapping.value, _CONTAINER)
+
     _INFLATED = True
