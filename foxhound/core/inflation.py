@@ -30,7 +30,7 @@ def inflate(container: Container, component_definitions: list[ComponentDefinitio
             value: Any = wiring_result.value()
 
             if value is not None:
-                container.register_component(Component(metadata=task.component_metadata, value=value))
+                container.register_component(Component(metadata=task.metadata, value=value))
 
             inflation_tasks.remove(task)
 

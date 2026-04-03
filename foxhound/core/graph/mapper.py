@@ -34,7 +34,7 @@ class DependencyGraphMapper:
 
     def _map_components(self, graph: DiGraph, component_definitions: list[ComponentDefinition]) -> None:
         for definition in component_definitions:
-            component_node_id: str = definition.component_metadata.id
+            component_node_id: str = definition.metadata.id
 
             graph.add_node(
                 component_node_id,
@@ -74,14 +74,14 @@ class DependencyGraphMapper:
 
     def _assert_unique_qualifiers(self, component_definitions: list[ComponentDefinition]) -> None:
         for definition in component_definitions:
-            qualifier: str | None = definition.component_metadata.qualifier
+            qualifier: str | None = definition.metadata.qualifier
 
             if qualifier is None:
                 continue
 
             qualifier_count: int = len([
                 d for d in component_definitions
-                if d.component_metadata.qualifier == qualifier
+                if d.metadata.qualifier == qualifier
             ])
 
             if qualifier_count > 1:

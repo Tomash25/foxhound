@@ -49,7 +49,7 @@ def define_component(
         return_type: type | GenericAlias = signature.return_annotation
 
     return ComponentDefinition(
-        component_metadata=ComponentMetadata(
+        metadata=ComponentMetadata(
             id=str(target),
             qualifier=qualifier,
             primary=primary,

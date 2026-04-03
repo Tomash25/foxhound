@@ -19,7 +19,7 @@ def parse_parameters(component_definition: ComponentDefinition) -> list[Paramete
                 name=name,
                 kind=kind,
                 qualifier=component_definition.param_qualifiers.get(name),
-                parent_component_id=component_definition.component_metadata.id
+                parent_component_id=component_definition.metadata.id
             )
         )
 
