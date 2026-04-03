@@ -2,7 +2,7 @@
 Foxhound - A lightweight dependency injection framework for Python.
 """
 
-from foxhound.core.api import component, define_component, start, wire
+from foxhound.core.api import component, define_component, start
 from foxhound.core.model.component import Component
 from foxhound.core.model.component_definition import ComponentDefinition
 from foxhound.core.model.component_metadata import ComponentMetadata

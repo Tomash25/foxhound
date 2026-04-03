@@ -11,7 +11,6 @@ from foxhound.core.model.component_metadata import ComponentMetadata
 from foxhound.core.model.result import Result
 from foxhound.core.model.wiring_task import WiringTask
 from foxhound.core.typing_tools import validate_concrete_parameters, validate_concrete_return_type
-from foxhound.core.wiring import try_wire_dependencies
 
 _CONTAINER = Container()
 _INFLATED = False
@@ -62,33 +61,6 @@ def define_component(
 
 def register_component_definition(definition: ComponentDefinition[T]) -> None:
     _COMPONENT_DEFINITIONS.append(definition)
-
-
-def wire(
-        param_qualifiers: dict[str, str] | None = None
-) -> Callable[[Callable[..., T]], Callable[[], T]]:
-    def decorator(func: Callable[..., T]) -> Callable[[], T]:
-        signature: inspect.Signature = inspect.signature(func)
-        _validate_function_signature(signature)
-
-        def wrapper() -> T:
-            if not _INFLATED:
-                logging.warning('Cannot wire dependencies; container isn\'t inflated. Make sure start() was called')
-                pass
-
-            wiring_result: Result[Callable[[], T]] = try_wire_dependencies(
-                func, {} if param_qualifiers is None else param_qualifiers, _CONTAINER
-            )
-
-            if wiring_result.successful:
-                wired_func: Callable[[], T] = wiring_result.value
-                return wired_func()
-
-            raise wiring_result.exception
-
-        return wrapper
-
-    return decorator
 
 
 def _validate_function_signature(signature: inspect.Signature) -> None:
