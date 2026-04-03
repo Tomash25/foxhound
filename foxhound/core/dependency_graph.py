@@ -17,6 +17,8 @@ class NodeType(Enum):
 
 
 class DependencyGraphMapper:
+    _dependency_resolver: DependencyResolver
+
     def __init__(self, dependency_resolver: DependencyResolver) -> None:
         self._dependency_resolver = dependency_resolver
 
