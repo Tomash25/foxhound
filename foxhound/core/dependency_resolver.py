@@ -1,3 +1,4 @@
+import typing
 from types import GenericAlias
 
 from foxhound.core.model.component_definition import ComponentDefinition
@@ -21,7 +22,11 @@ class DependencyResolver:
         kind: type | GenericAlias = dependency.kind
         qualifier: str = dependency.qualifier
 
-        type_matches: list[ComponentDefinition] = self._filter_matching_candidates(dependency, candidates)
+        type_matches: list[ComponentDefinition] = self._filter_matching_candidates(
+            kind,
+            dependency.parent_component_id,
+            candidates
+        )
 
         if len(type_matches) == 0:
             return Result.fail(
@@ -45,9 +50,22 @@ class DependencyResolver:
     ) -> Result[list[str]]:
         kind: type | GenericAlias = dependency.kind
 
-        type_matches: list[ComponentDefinition] = self._filter_matching_candidates(dependency, candidates)
+        type_matches: list[ComponentDefinition] = self._filter_matching_candidates(
+            kind,
+            dependency.parent_component_id,
+            candidates
+        )
 
         if len(type_matches) == 0:
+            if typing.get_origin(kind) is list:
+                subtype_matches: list[ComponentDefinition] = self._filter_matching_candidates(
+                    typing.get_args(kind)[0],
+                    dependency.parent_component_id,
+                    candidates
+                )
+
+                return Result.ok([component.metadata.id for component in subtype_matches])
+
             return Result.fail('No registered component matching {kind}')
 
         if len(type_matches) == 1:
@@ -76,11 +94,12 @@ class DependencyResolver:
 
     def _filter_matching_candidates(
             self,
-            dependency: Parameter,
+            kind: type | GenericAlias,
+            parent_component_id: str,
             candidates: list[ComponentDefinition]
     ) -> list[ComponentDefinition]:
         return [
             candidate for candidate in candidates
-            if is_assignable_to(candidate.metadata.kind, dependency.kind)
-               and candidate.metadata.id != dependency.parent_component_id
+            if is_assignable_to(candidate.metadata.kind, kind)
+               and candidate.metadata.id != parent_component_id
         ]
