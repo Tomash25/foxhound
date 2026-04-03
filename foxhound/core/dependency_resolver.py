@@ -7,13 +7,17 @@ from foxhound.core.typing_tools import is_assignable_to
 
 
 class DependencyResolver:
-    def try_resolve(self, dependency: Parameter, candidates: list[ComponentDefinition]) -> Result[str]:
+    def try_resolve(self, dependency: Parameter, candidates: list[ComponentDefinition]) -> Result[list[str]]:
         if dependency.qualifier is None:
-            return self._find_unqualified_component(dependency, candidates)
+            return self._find_unqualified_components(dependency, candidates)
 
         return self._find_qualified_component(dependency, candidates)
 
-    def _find_qualified_component(self, dependency: Parameter, candidates: list[ComponentDefinition]) -> Result[str]:
+    def _find_qualified_component(
+            self,
+            dependency: Parameter,
+            candidates: list[ComponentDefinition]
+    ) -> Result[list[str]]:
         kind: type | GenericAlias = dependency.kind
         qualifier: str = dependency.qualifier
 
@@ -27,14 +31,18 @@ class DependencyResolver:
 
         for candidate in type_matches:
             if candidate.metadata.qualifier == qualifier:
-                return Result.ok(candidate.metadata.id)
+                return Result.ok([candidate.metadata.id])
 
         return Result.fail(
             f'No registered component matching {kind} with qualifier "{qualifier}". '
             f'However, {len(type_matches)} other components matching {kind} are registered.'
         )
 
-    def _find_unqualified_component(self, dependency: Parameter, candidates: list[ComponentDefinition]) -> Result[str]:
+    def _find_unqualified_components(
+            self,
+            dependency: Parameter,
+            candidates: list[ComponentDefinition]
+    ) -> Result[list[str]]:
         kind: type | GenericAlias = dependency.kind
 
         type_matches: list[ComponentDefinition] = self._filter_matching_candidates(dependency, candidates)
@@ -43,7 +51,7 @@ class DependencyResolver:
             return Result.fail('No registered component matching {kind}')
 
         if len(type_matches) == 1:
-            return Result.ok(type_matches[0].metadata.id)
+            return Result.ok([type_matches[0].metadata.id])
 
         primary_matches: list[ComponentDefinition] = [
             candidate for candidate in type_matches
@@ -51,7 +59,7 @@ class DependencyResolver:
         ]
 
         if len(primary_matches) == 1:
-            return Result.ok(primary_matches[0].metadata.id)
+            return Result.ok([primary_matches[0].metadata.id])
 
         if len(primary_matches) > 1:
             return Result.fail(
