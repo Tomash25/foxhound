@@ -1,19 +1,12 @@
-from abc import ABC, abstractmethod
 from types import GenericAlias
 
 from foxhound.core.model.component_definition import ComponentDefinition
-from foxhound.core.model.result import Result
 from foxhound.core.model.parameter import Parameter
+from foxhound.core.model.result import Result
 from foxhound.core.typing_tools import is_assignable_to
 
 
-class DependencyResolver(ABC):
-    @abstractmethod
-    def try_resolve(self, dependency: Parameter, candidates: list[ComponentDefinition]) -> Result[str]:
-        ...
-
-
-class BasicDependencyResolver(DependencyResolver):
+class DependencyResolver:
     def try_resolve(self, dependency: Parameter, candidates: list[ComponentDefinition]) -> Result[str]:
         if dependency.qualifier is None:
             return self._find_unqualified_component(dependency, candidates)
@@ -81,5 +74,5 @@ class BasicDependencyResolver(DependencyResolver):
         return [
             candidate for candidate in candidates
             if is_assignable_to(candidate.component_metadata.kind, dependency.kind)
-            and candidate.id != dependency.parent_component_id
+               and candidate.id != dependency.parent_component_id
         ]
