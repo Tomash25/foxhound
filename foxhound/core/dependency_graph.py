@@ -1,19 +1,13 @@
-from enum import Enum
-
 from networkx import DiGraph, is_directed_acyclic_graph
 
 from foxhound.core.dependency_resolver import DependencyResolver
 from foxhound.core.exception.dependency import UnsatisfiedDependenciesError
 from foxhound.core.exception.graph import CyclicGraphError
+from foxhound.core.graph.node_type import NodeType
 from foxhound.core.model.component_definition import ComponentDefinition
 from foxhound.core.model.parameter import Parameter
 from foxhound.core.model.result import Result
 from foxhound.core.parameter_tools import parse_parameters
-
-
-class NodeType(Enum):
-    COMPONENT = 'COMPONENT'
-    PARAMETER = 'PARAMETER'
 
 
 class DependencyGraphMapper:
