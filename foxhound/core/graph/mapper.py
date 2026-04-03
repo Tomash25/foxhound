@@ -34,7 +34,7 @@ class DependencyGraphMapper:
 
     def _map_components(self, graph: DiGraph, component_definitions: list[ComponentDefinition]) -> None:
         for definition in component_definitions:
-            component_node_id: str = definition.id
+            component_node_id: str = definition.component_metadata.id
 
             graph.add_node(
                 component_node_id,

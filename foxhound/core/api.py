@@ -4,14 +4,14 @@ from collections.abc import Callable
 from types import GenericAlias
 from typing import Any, TypeVar
 
-from foxhound.core.model.component_definition import ComponentDefinition
-from foxhound.core.model.component_metadata import ComponentMetadata
 from foxhound.core.container import Container
 from foxhound.core.inflation import inflate
+from foxhound.core.model.component_definition import ComponentDefinition
+from foxhound.core.model.component_metadata import ComponentMetadata
 from foxhound.core.model.result import Result
+from foxhound.core.model.wiring_task import WiringTask
 from foxhound.core.typing_tools import validate_concrete_parameters, validate_concrete_return_type
 from foxhound.core.wiring import try_wire_dependencies
-from foxhound.core.model.wiring_task import WiringTask
 
 _CONTAINER = Container()
 _INFLATED = False
@@ -49,8 +49,8 @@ def define_component(
         return_type: type | GenericAlias = signature.return_annotation
 
     return ComponentDefinition(
-        id=str(target),
         component_metadata=ComponentMetadata(
+            id=str(target),
             qualifier=qualifier,
             primary=primary,
             kind=return_type

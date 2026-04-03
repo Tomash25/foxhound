@@ -27,7 +27,7 @@ class DependencyResolver:
 
         for candidate in type_matches:
             if candidate.component_metadata.qualifier == qualifier:
-                return Result.ok(candidate.id)
+                return Result.ok(candidate.component_metadata.id)
 
         return Result.fail(
             f'No registered component matching {kind} with qualifier "{qualifier}". '
@@ -43,7 +43,7 @@ class DependencyResolver:
             return Result.fail('No registered component matching {kind}')
 
         if len(type_matches) == 1:
-            return Result.ok(type_matches[0].id)
+            return Result.ok(type_matches[0].component_metadata.id)
 
         primary_matches: list[ComponentDefinition] = [
             candidate for candidate in type_matches
@@ -51,7 +51,7 @@ class DependencyResolver:
         ]
 
         if len(primary_matches) == 1:
-            return Result.ok(primary_matches[0].id)
+            return Result.ok(primary_matches[0].component_metadata.id)
 
         if len(primary_matches) > 1:
             return Result.fail(
@@ -74,5 +74,5 @@ class DependencyResolver:
         return [
             candidate for candidate in candidates
             if is_assignable_to(candidate.component_metadata.kind, dependency.kind)
-               and candidate.id != dependency.parent_component_id
+               and candidate.component_metadata.id != dependency.parent_component_id
         ]
