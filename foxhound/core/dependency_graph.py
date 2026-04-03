@@ -57,7 +57,7 @@ class DependencyGraphMapper:
                     properties=parameter
                 )
 
-                graph.add_edge(parameter_node_id, component_node_id)
+                graph.add_edge(component_node_id, parameter_node_id)
 
     def _map_dependencies(self, graph: DiGraph, definitions: list[ComponentDefinition]) -> Result[None]:
         all_parameters: dict[str, Parameter] = self._filter_parameter_nodes(graph)
