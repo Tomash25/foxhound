@@ -12,13 +12,12 @@ from foxhound.core.graph.mapper import DependencyGraphMapper
 from foxhound.core.model.component_definition import ComponentDefinition
 from foxhound.core.model.component_metadata import ComponentMetadata
 from foxhound.core.model.result import Result
-from foxhound.core.model.wiring_task import WiringTask
 from foxhound.core.typing_tools import validate_concrete_parameters, validate_concrete_return_type
 
 _CONTAINER = Container()
 _INFLATED = False
 _COMPONENT_DEFINITIONS: list[ComponentDefinition[Any]] = []
-_WIRING_TASKS: list[WiringTask] = []
+
 
 T = TypeVar('T')
 
