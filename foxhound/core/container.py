@@ -24,8 +24,8 @@ class Container:
 
         self._components[component.metadata.id] = component
 
-    def get_component(self, component_id: str) -> Component[Any]:
-        return self._components[component_id]
+    def get_component(self, component_id: str) -> Component[Any] | None:
+        return self._components.get(component_id)
 
     def _already_exists(self, qualifier: str) -> bool:
         return any(component.metadata.qualifier == qualifier for component in self._components.values())
