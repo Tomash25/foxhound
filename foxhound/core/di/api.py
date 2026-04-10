@@ -5,14 +5,14 @@ from typing import Any, TypeVar
 
 from networkx.classes import DiGraph
 
-from foxhound.core.container import Container
-from foxhound.core.dependency_resolver import DependencyResolver
-from foxhound.core.graph.inflator import DependencyGraphInflator
-from foxhound.core.graph.mapper import DependencyGraphMapper
-from foxhound.core.component_definition import ComponentDefinition
-from foxhound.core.component_metadata import ComponentMetadata
+from foxhound.core.di.container import Container
+from foxhound.core.di.dependency_resolver import DependencyResolver
+from foxhound.core.di.graph.inflator import DependencyGraphInflator
+from foxhound.core.di.graph.mapper import DependencyGraphMapper
+from foxhound.core.di.component_definition import ComponentDefinition
+from foxhound.core.di.component_metadata import ComponentMetadata
 from foxhound.core.result import Result
-from foxhound.core.typing_tools import validate_concrete_parameters, validate_concrete_return_type
+from foxhound.core.utils.typing import validate_concrete_parameters, validate_concrete_return_type
 
 _CONTAINER = Container()
 _INFLATED = False

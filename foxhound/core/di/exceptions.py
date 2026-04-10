@@ -1,4 +1,4 @@
-from foxhound.core.parameter import Parameter
+from foxhound.core.di.parameter import Parameter
 
 
 class UnsatisfiedDependenciesError(Exception):

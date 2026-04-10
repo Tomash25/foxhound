@@ -1,9 +1,9 @@
 import inspect
 from typing import Any
 
-from foxhound.core.component_definition import ComponentDefinition
-from foxhound.core.parameter import Parameter
-from foxhound.core.typing_tools import simplify_arguments
+from foxhound.core.di.component_definition import ComponentDefinition
+from foxhound.core.di.parameter import Parameter
+from foxhound.core.utils.typing import simplify_arguments
 
 
 def parse_parameters(component_definition: ComponentDefinition) -> list[Parameter]:

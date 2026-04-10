@@ -1,10 +1,10 @@
 import typing
 from types import GenericAlias
 
-from foxhound.core.component_definition import ComponentDefinition
-from foxhound.core.parameter import Parameter
+from foxhound.core.di.component_definition import ComponentDefinition
+from foxhound.core.di.parameter import Parameter
 from foxhound.core.result import Result
-from foxhound.core.typing_tools import is_assignable_to
+from foxhound.core.utils.typing import is_assignable_to
 
 
 class DependencyResolver:

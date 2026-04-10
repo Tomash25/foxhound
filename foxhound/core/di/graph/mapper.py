@@ -1,11 +1,11 @@
 from networkx import DiGraph, is_directed_acyclic_graph
 
-from foxhound.core.dependency_resolver import DependencyResolver
-from foxhound.core.exceptions import UnsatisfiedDependenciesError
-from foxhound.core.graph.exceptions import CyclicGraphError
-from foxhound.core.graph.node_type import NodeType
-from foxhound.core.component_definition import ComponentDefinition
-from foxhound.core.parameter import Parameter
+from foxhound.core.di.dependency_resolver import DependencyResolver
+from foxhound.core.di.exceptions import UnsatisfiedDependenciesError
+from foxhound.core.di.graph.exceptions import CyclicGraphError
+from foxhound.core.di.graph.node_type import NodeType
+from foxhound.core.di.component_definition import ComponentDefinition
+from foxhound.core.di.parameter import Parameter
 from foxhound.core.result import Result
 from foxhound.core.parameter_tools import parse_parameters
 
