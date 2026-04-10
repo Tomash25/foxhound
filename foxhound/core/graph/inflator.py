@@ -4,8 +4,8 @@ from networkx.classes import DiGraph
 
 from foxhound.core.container import Container
 from foxhound.core.graph.node_type import NodeType
-from foxhound.core.model.component import Component
-from foxhound.core.model.component_definition import ComponentDefinition
+from foxhound.core.component import Component
+from foxhound.core.component_definition import ComponentDefinition
 
 
 class DependencyGraphInflator:

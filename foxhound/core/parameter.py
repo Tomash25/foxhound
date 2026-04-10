@@ -1,6 +1,6 @@
 from types import GenericAlias
 
-from foxhound.core.model.base_model import BaseModel
+from foxhound.core.base_model import BaseModel
 
 
 class Parameter(BaseModel):

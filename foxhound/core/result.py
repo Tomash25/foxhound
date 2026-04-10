@@ -1,6 +1,6 @@
 from typing import Generic, TypeVar
 
-from foxhound.core.model.base_model import BaseModel
+from foxhound.core.base_model import BaseModel
 
 T = TypeVar('T')
 

@@ -4,9 +4,9 @@ from foxhound.core.dependency_resolver import DependencyResolver
 from foxhound.core.exceptions import UnsatisfiedDependenciesError
 from foxhound.core.graph.exceptions import CyclicGraphError
 from foxhound.core.graph.node_type import NodeType
-from foxhound.core.model.component_definition import ComponentDefinition
-from foxhound.core.model.parameter import Parameter
-from foxhound.core.model.result import Result
+from foxhound.core.component_definition import ComponentDefinition
+from foxhound.core.parameter import Parameter
+from foxhound.core.result import Result
 from foxhound.core.parameter_tools import parse_parameters
 
 

@@ -9,9 +9,9 @@ from foxhound.core.container import Container
 from foxhound.core.dependency_resolver import DependencyResolver
 from foxhound.core.graph.inflator import DependencyGraphInflator
 from foxhound.core.graph.mapper import DependencyGraphMapper
-from foxhound.core.model.component_definition import ComponentDefinition
-from foxhound.core.model.component_metadata import ComponentMetadata
-from foxhound.core.model.result import Result
+from foxhound.core.component_definition import ComponentDefinition
+from foxhound.core.component_metadata import ComponentMetadata
+from foxhound.core.result import Result
 from foxhound.core.typing_tools import validate_concrete_parameters, validate_concrete_return_type
 
 _CONTAINER = Container()

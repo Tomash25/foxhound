@@ -3,7 +3,7 @@ from typing import Generic, TypeVar, get_origin
 
 from pydantic import BaseModel, model_validator
 
-from foxhound.core.model.component_metadata import ComponentMetadata
+from foxhound.core.component_metadata import ComponentMetadata
 
 T = TypeVar('T')
 
