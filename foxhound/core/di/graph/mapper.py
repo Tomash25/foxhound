@@ -6,7 +6,7 @@ from foxhound.core.di.graph.exceptions import CyclicGraphError
 from foxhound.core.di.graph.models import NodeType
 from foxhound.core.di.models import ComponentDefinition, Parameter
 from foxhound.core.models import Result
-from foxhound.core.parameter_tools import parse_parameters
+from foxhound.core.di.utils.parameters import parse_parameters
 
 
 class DependencyGraphMapper:
