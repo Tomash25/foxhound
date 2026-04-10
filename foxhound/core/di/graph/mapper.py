@@ -5,8 +5,8 @@ from foxhound.core.di.exceptions import UnsatisfiedDependenciesError
 from foxhound.core.di.graph.exceptions import CyclicGraphError
 from foxhound.core.di.graph.models import NodeType
 from foxhound.core.di.models import ComponentDefinition, Parameter
-from foxhound.core.models import Result
 from foxhound.core.di.utils.parameters import parse_parameters
+from foxhound.core.models import Result
 
 
 class DependencyGraphMapper:

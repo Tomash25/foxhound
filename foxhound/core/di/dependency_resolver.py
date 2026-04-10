@@ -1,8 +1,7 @@
 import typing
 from types import GenericAlias
 
-from foxhound.core.di.models import ComponentDefinition
-from foxhound.core.di.models import Parameter
+from foxhound.core.di.models import ComponentDefinition, Parameter
 from foxhound.core.models import Result
 from foxhound.core.utils.typing import is_assignable_to
 
