@@ -1,6 +1,6 @@
 from typing import Any, TypeVar
 
-from foxhound.core.di.component import Component
+from foxhound.core.di.models import Component
 from foxhound.core.utils.typing import is_assignable_to
 
 T = TypeVar('T')

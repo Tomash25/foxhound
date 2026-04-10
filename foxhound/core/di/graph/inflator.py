@@ -1,11 +1,11 @@
-from typing import Any, Hashable
+from collections.abc import Hashable
+from typing import Any
 
 from networkx.classes import DiGraph
 
 from foxhound.core.di.container import Container
-from foxhound.core.di.graph.node_type import NodeType
-from foxhound.core.di.component import Component
-from foxhound.core.di.component_definition import ComponentDefinition
+from foxhound.core.di.graph.models import NodeType
+from foxhound.core.di.models import Component, ComponentDefinition
 
 
 class DependencyGraphInflator:
