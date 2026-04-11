@@ -1,0 +1,1 @@
+OBJECT_COMPONENT_DEFINITION_ATTRIBUTE: str = '__foxhound_component_definition'
