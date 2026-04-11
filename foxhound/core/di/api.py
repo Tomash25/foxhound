@@ -5,6 +5,7 @@ from typing import Any, TypeVar
 
 from networkx.classes import DiGraph
 
+from foxhound.core.di.consts import OBJECT_COMPONENT_DEFINITION_ATTRIBUTE
 from foxhound.core.di.container import Container
 from foxhound.core.di.dependency_resolver import DependencyResolver
 from foxhound.core.di.graph.inflator import DependencyGraphInflator
@@ -28,7 +29,7 @@ def component(
 ) -> type[T] | Callable[..., T]:
     def decorator(target: type[T] | Callable[..., T]) -> type[T] | Callable[..., T]:
         component_definition: ComponentDefinition[T] = define_component(target, qualifier, primary, param_qualifiers)
-        register_component_definition(component_definition)
+        setattr(target, OBJECT_COMPONENT_DEFINITION_ATTRIBUTE, component_definition)
         return target
 
     return decorator
