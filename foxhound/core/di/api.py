@@ -1,6 +1,7 @@
 import inspect
+from collections.abc import Callable
 from types import GenericAlias
-from typing import TypeVar, Callable
+from typing import TypeVar
 
 from networkx.classes import DiGraph
 
