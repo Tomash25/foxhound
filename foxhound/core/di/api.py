@@ -1,10 +1,10 @@
 import inspect
-from collections.abc import Callable
 from types import GenericAlias
-from typing import Any, TypeVar
+from typing import TypeVar, Callable
 
 from networkx.classes import DiGraph
 
+from foxhound.core.di.component_scanner import ComponentScanner
 from foxhound.core.di.consts import OBJECT_COMPONENT_DEFINITION_ATTRIBUTE
 from foxhound.core.di.container import Container
 from foxhound.core.di.dependency_resolver import DependencyResolver
@@ -13,11 +13,6 @@ from foxhound.core.di.graph.mapper import DependencyGraphMapper
 from foxhound.core.di.models import ComponentDefinition, ComponentMetadata
 from foxhound.core.models import Result
 from foxhound.core.utils.typing import validate_concrete_parameters, validate_concrete_return_type
-
-_CONTAINER = Container()
-_INFLATED = False
-_COMPONENT_DEFINITIONS: list[ComponentDefinition[Any]] = []
-
 
 T = TypeVar('T')
 
@@ -29,7 +24,7 @@ def component(
 ) -> type[T] | Callable[..., T]:
     def decorator(target: type[T] | Callable[..., T]) -> type[T] | Callable[..., T]:
         component_definition: ComponentDefinition[T] = define_component(target, qualifier, primary, param_qualifiers)
-        setattr(target, OBJECT_COMPONENT_DEFINITION_ATTRIBUTE, component_definition)
+        embed_definition(target, component_definition)
         return target
 
     return decorator
@@ -62,8 +57,8 @@ def define_component(
     )
 
 
-def register_component_definition(definition: ComponentDefinition[T]) -> None:
-    _COMPONENT_DEFINITIONS.append(definition)
+def embed_definition(target: type[T] | Callable[..., T], component_definition: ComponentDefinition[T]):
+    setattr(target, OBJECT_COMPONENT_DEFINITION_ATTRIBUTE, component_definition)
 
 
 def _validate_function_signature(signature: inspect.Signature) -> None:
@@ -86,20 +81,15 @@ def _validate_ctor_signature(signature: inspect.Signature) -> None:
 
 
 def start() -> None:
-    global _CONTAINER, _INFLATED
-
-    if _INFLATED:
-        return
-
-    _CONTAINER = Container()
-
+    component_scanner: ComponentScanner = ComponentScanner()
     dependency_resolver: DependencyResolver = DependencyResolver()
     graph_mapper: DependencyGraphMapper = DependencyGraphMapper(dependency_resolver)
-    dependency_graph_mapping: Result[DiGraph] = graph_mapper.map(_COMPONENT_DEFINITIONS)
+    dependency_graph_mapping: Result[DiGraph] = graph_mapper.map(component_scanner.scan())
 
     if not dependency_graph_mapping.successful:
         raise dependency_graph_mapping.exception
 
-    DependencyGraphInflator().inflate(dependency_graph_mapping.value, _CONTAINER)
-
-    _INFLATED = True
+    DependencyGraphInflator().inflate(
+        dependency_graph_mapping.value,
+        Container()
+    )
