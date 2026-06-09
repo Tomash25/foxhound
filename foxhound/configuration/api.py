@@ -6,8 +6,8 @@ from pydantic import BaseModel
 
 from foxhound import ComponentDefinition, define_component
 from foxhound.configuration.configuration_reader import ConfigurationReader, ConfigurationSection
-from foxhound.core.api import register_component_definition
-from foxhound.core.typing_tools import simplify_arguments
+from foxhound.core.di.api import embed_definition
+from foxhound.core.utils.typing import simplify_arguments
 
 T = TypeVar('T')
 
@@ -26,7 +26,7 @@ def configuration(
         component_definition: ComponentDefinition[T] = define_component(target, qualifier, primary)
         component_definition.inflator = inflator
 
-        register_component_definition(component_definition)
+        embed_definition(target, component_definition)
 
         return target
 

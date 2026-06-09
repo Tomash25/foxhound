@@ -1,11 +1,25 @@
+from collections.abc import Callable
 from types import GenericAlias
 from typing import Generic, TypeVar, get_origin
 
-from pydantic import BaseModel, model_validator
+from pydantic import model_validator
 
-from foxhound.core.model.component_metadata import ComponentMetadata
+from foxhound.core.models import BaseModel
 
 T = TypeVar('T')
+
+class Parameter(BaseModel):
+    name: str
+    kind: type | GenericAlias
+    qualifier: str | None = None
+    parent_component_id: str
+
+
+class ComponentMetadata(BaseModel):
+    id: str
+    qualifier: str | None = None
+    primary: bool = False
+    kind: type | GenericAlias
 
 
 class Component(BaseModel, Generic[T]):
@@ -25,3 +39,10 @@ class Component(BaseModel, Generic[T]):
             )
 
         return self
+
+
+class ComponentDefinition(BaseModel, Generic[T]):
+    metadata: ComponentMetadata
+    inflator: Callable[..., T]
+    param_qualifiers: dict[str, str] = {}
+

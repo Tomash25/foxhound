@@ -1,7 +1,7 @@
 from typing import Any, TypeVar
 
-from foxhound.core.model.component import Component
-from foxhound.core.typing_tools import is_assignable_to
+from foxhound.core.di.models import Component
+from foxhound.core.utils.typing import is_assignable_to
 
 T = TypeVar('T')
 
