@@ -13,7 +13,6 @@ __all__ = [
     'component',
     'define_component',
     'start',
-    'wire',
     'Component',
     'ComponentDefinition',
     'ComponentMetadata',
