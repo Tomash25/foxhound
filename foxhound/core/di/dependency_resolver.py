@@ -65,7 +65,7 @@ class DependencyResolver:
 
                 return Result.ok([component.metadata.id for component in subtype_matches])
 
-            return Result.fail('No registered component matching {kind}')
+            return Result.fail(f'No registered component matching {kind}')
 
         if len(type_matches) == 1:
             return Result.ok([type_matches[0].metadata.id])
