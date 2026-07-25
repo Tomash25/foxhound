@@ -56,7 +56,7 @@ class DependencyGraphMapper:
 
     def _map_dependencies(self, graph: DiGraph, definitions: list[ComponentDefinition]) -> Result[None]:
         all_parameters: dict[str, Parameter] = self._filter_parameter_nodes(graph)
-        mapping_failures: dict[Parameter, str] = {}
+        mapping_failures: dict[str, str] = {}
 
         for parameter_node_id, parameter in all_parameters.items():
             dependency_resolution: Result[list[str]] = self._dependency_resolver.try_resolve(parameter, definitions)
@@ -65,7 +65,7 @@ class DependencyGraphMapper:
                 for component_id in dependency_resolution.value:
                     graph.add_edge(parameter_node_id, component_id)
             else:
-                mapping_failures[parameter] = dependency_resolution.hint
+                mapping_failures[parameter.name] = dependency_resolution.hint
 
         if len(mapping_failures) != 0:
             return Result.error(UnsatisfiedDependenciesError(mapping_failures))
