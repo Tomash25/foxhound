@@ -1,6 +1,6 @@
 import inspect
 from collections.abc import Callable
-from types import GenericAlias
+from types import GenericAlias, ModuleType
 from typing import TypeVar
 
 from networkx.classes import DiGraph
@@ -81,11 +81,14 @@ def _validate_ctor_signature(signature: inspect.Signature) -> None:
         raise TypeError('Class constructor parameters must be strongly type hinted for DI') from e
 
 
-def start() -> None:
+def start(*scan_modules: str | ModuleType) -> None:
     component_scanner: ComponentScanner = ComponentScanner()
     dependency_resolver: DependencyResolver = DependencyResolver()
     graph_mapper: DependencyGraphMapper = DependencyGraphMapper(dependency_resolver)
-    dependency_graph_mapping: Result[DiGraph] = graph_mapper.map(component_scanner.scan())
+
+    dependency_graph_mapping: Result[DiGraph] = graph_mapper.map(
+        component_scanner.scan(set(scan_modules))
+    )
 
     if not dependency_graph_mapping.successful:
         raise dependency_graph_mapping.exception
